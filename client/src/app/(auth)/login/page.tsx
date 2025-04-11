@@ -1,9 +1,10 @@
-import RegisterFormCard from "@/components/RegisterFormCard";
+import LoginFormCard from "@/components/LoginFormCard";
 
 export default function RegisterPage() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-muted">
-      <RegisterFormCard />
+      <LoginFormCard />
     </main>
   );
 }
+

@@ -1,7 +1,6 @@
 "use client";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,9 +11,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import RegsiterFormSchema, { RegisterFormSchema } from "@/schemas/register.schema";
 import axios from "axios";
 import { BackendUrl } from "@/config";
+import Link from "next/link";
 
 
-export default function RegisterForm() {
+export default function RegisterFormCard() {
     const [loading, setLoading] = useState(false);
 
 
@@ -108,6 +108,13 @@ export default function RegisterForm() {
                     <Button type="submit" disabled={loading} className="w-full">
                         {loading ? "Registering..." : "Register"}
                     </Button>
+
+                    <p className="text-sm text-center">
+                        Already have an account?{" "}
+                        <Link href="/login" className="text-blue-500 hover:underline">
+                            Login
+                        </Link>
+                    </p>
                 </form>
             </CardContent>
         </Card>
