@@ -3,6 +3,7 @@ import dotenv from 'dotenv'
 import cors from 'cors'
 dotenv.config()
 import userRouter from './routers/user.route';
+import bookRouter from './routers/book.route';
 
 const app = express()
 
@@ -18,7 +19,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use('/api/user', userRouter);
+app.use('/api/book', bookRouter);
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
-})  
+})   

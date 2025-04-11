@@ -38,7 +38,11 @@ export default function RegisterFormCard() {
 
             localStorage.setItem("user", JSON.stringify(user));
             toast.success("Registration successful");
-            window.location.href = "/home";
+            if (user.role === "OWNER") {
+                window.location.href = "/owner/my-books";
+            } else if (user.role === "SEEKER") {
+                window.location.href = "/home";
+            }
         } catch (err: any) {
 
             if (axios.isAxiosError(err)) {

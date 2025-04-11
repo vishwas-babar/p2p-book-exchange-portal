@@ -29,13 +29,13 @@ model User {
 }
 
 model Book {
-  id      String     @id @default(uuid())
-  title   String
-  author  String
-  genre   String?
-  city    String
-  contact String
-  status  BookStatus @default(AVAILABLE)
+  id              String     @id @default(uuid())
+  title           String
+  author          String
+  genre           String?
+  city            String
+  contact         String
+  status          BookStatus @default(AVAILABLE)
 
   // Owner (who listed it)
   ownerId String
@@ -44,6 +44,11 @@ model Book {
   // Seeker (who rented it) — optional
   rentedById String?
   rentedBy   User?   @relation("RentedBooks", fields: [rentedById], references: [id])
+
+  // Exchange relation
+  exchangedWithId String? // ID of the book this one is exchanged with
+  exchangedWith   Book?   @relation("BookExchange", fields: [exchangedWithId], references: [id])
+  exchangedBy     Book[]  @relation("BookExchange")
 
   createdAt DateTime @default(now())
 }
@@ -56,4 +61,5 @@ enum Role {
 enum BookStatus {
   AVAILABLE
   RENTED
+  EXCHANGED
 }

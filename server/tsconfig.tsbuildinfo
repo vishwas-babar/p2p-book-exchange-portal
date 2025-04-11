@@ -1,1 +1,1 @@
-{"root":["./src/index.ts"],"version":"5.7.3"}
+{"root":["./src/index.ts","./src/controllers/book.controller.ts","./src/controllers/user.controller.ts","./src/lib/prisma.ts","./src/routers/book.route.ts","./src/routers/user.route.ts","./src/schemas/book.schema.ts"],"version":"5.7.3"}

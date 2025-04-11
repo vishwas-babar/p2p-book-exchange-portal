@@ -35,7 +35,11 @@ export default function LoginFormCard() {
 
             localStorage.setItem("user", JSON.stringify(user));
             toast.success("Login successful");
-            window.location.href = "/home";
+            if (user.role === "OWNER") {
+                window.location.href = "/owner/my-books";
+            } else if (user.role === "SEEKER") {
+                window.location.href = "/home";
+            }
         } catch (err: any) {
             if (axios.isAxiosError(err)) {
                 if (err.response?.status === 401) {
