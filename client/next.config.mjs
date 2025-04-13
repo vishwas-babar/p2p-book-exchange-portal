@@ -6,7 +6,8 @@ const nextConfig = {
                 hostname: "*"
             }
         ]
-    }
+    },
+    reactStrictMode: false
 };
 
 

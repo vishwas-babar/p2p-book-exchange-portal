@@ -9,13 +9,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
+import { set, z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { BackendUrl } from "@/config";
 import { toast } from "sonner";
 import { useAuthUser } from "@/hooks/useAuthUser";
+import { Loader2 } from "lucide-react";
 
 const formSchema = z.object({
     title: z.string().min(2),
@@ -42,20 +43,34 @@ export function AddBookCard({
     editBookId?: string;
 }) {
     const { user } = useAuthUser();
+    const [book, setBook] = useState<{
+        status: 'loading' | 'success' | 'failed'
+        data: FormData | null
+    }>({
+        status: 'loading',
+        data: null
+    });
 
     const {
         register,
         handleSubmit,
         reset,
+        getValues,
+        setValue,
         formState: { errors },
     } = useForm<FormData>({
         resolver: zodResolver(formSchema),
+        defaultValues: { ...book.data }
     });
 
-    // fetch book data for editing
     useEffect(() => {
-        if (open) fetchBook();
-    }, [editing, editBookId, open, reset]);
+        if (editing && editBookId) {
+            fetchBook();
+        } else {
+            reset(); // clear form when it's not editing or just opened
+        }
+    }, [open]);
+
 
 
     const fetchBook = async () => {
@@ -63,20 +78,24 @@ export function AddBookCard({
             try {
                 const res = await axios.get(`${BackendUrl}/book/${editBookId}`);
                 const book = res.data;
-                reset({
-                    title: book.title,
-                    author: book.author,
-                    genre: book.genre || "",
-                    city: book.city,
-                    contact: book.contact,
-                    coverImage: book.coverImage
+
+
+                setBook({
+                    status: 'success',
+                    data: {
+                        author: book.author,
+                        city: book.city,
+                        contact: book.contact,
+                        coverImage: book.coverImage,
+                        title: book.title,
+                        genre: book.genre
+                    }
                 });
+
             } catch (error) {
                 console.error("Failed to fetch book details:", error);
                 toast.error("Failed to load book data");
             }
-        } else {
-            reset(); // reset to empty form when not editing
         }
     };
 
@@ -108,7 +127,11 @@ export function AddBookCard({
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogContent className="sm:max-w-md">
+            {(editing && book.status === 'loading') ? (
+                <DialogContent className="sm:max-w-md">
+                    <Loader2 className="animate-spin" />
+                </DialogContent>
+            ) : (<DialogContent className="sm:max-w-md">
                 <DialogHeader>
                     <DialogTitle>{editing ? "Edit Book" : "Add New Book"}</DialogTitle>
                 </DialogHeader>
@@ -116,36 +139,48 @@ export function AddBookCard({
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
                     <div>
                         <label className="block text-sm font-medium">Cover Image</label>
-                        <Input {...register("coverImage")} placeholder="Cover Image URL" />
+                        <Input
+                            defaultValue={book?.data?.coverImage}
+                            {...register("coverImage")} placeholder="Cover Image URL" />
                         {errors.coverImage && <p className="text-sm text-red-500">{errors.coverImage.message}</p>}
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium">Title</label>
-                        <Input {...register("title")} placeholder="Book Title" />
+                        <Input
+                            defaultValue={book?.data?.title}
+                            {...register("title")} placeholder="Book Title" />
                         {errors.title && <p className="text-sm text-red-500">{errors.title.message}</p>}
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium">Author</label>
-                        <Input {...register("author")} placeholder="Book Author" />
+                        <Input
+                            defaultValue={book?.data?.author}
+                            {...register("author")} placeholder="Book Author" />
                         {errors.author && <p className="text-sm text-red-500">{errors.author.message}</p>}
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium">Genre</label>
-                        <Input {...register("genre")} placeholder="e.g. Self-help, Fiction..." />
+                        <Input
+                            defaultValue={book?.data?.genre}
+                            {...register("genre")} placeholder="e.g. Self-help, Fiction..." />
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium">City</label>
-                        <Input {...register("city")} placeholder="e.g. Mumbai" />
+                        <Input
+                            defaultValue={book?.data?.city}
+                            {...register("city")} placeholder="e.g. Mumbai" />
                         {errors.city && <p className="text-sm text-red-500">{errors.city.message}</p>}
                     </div>
 
                     <div>
                         <label className="block text-sm font-medium">Contact</label>
-                        <Input {...register("contact")} placeholder="Phone, Email, etc." />
+                        <Input
+                            defaultValue={book?.data?.contact}
+                            {...register("contact")} placeholder="Phone, Email, etc." />
                         {errors.contact && <p className="text-sm text-red-500">{errors.contact.message}</p>}
                     </div>
 
@@ -153,7 +188,7 @@ export function AddBookCard({
                         <Button type="submit">{editing ? "Update Book" : "Add Book"}</Button>
                     </div>
                 </form>
-            </DialogContent>
+            </DialogContent>)}
         </Dialog>
     );
 }

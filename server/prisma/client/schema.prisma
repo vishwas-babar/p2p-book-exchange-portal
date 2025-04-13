@@ -1,0 +1,66 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  mobile    String
+  password  String
+  role      Role
+  createdAt DateTime @default(now())
+
+  // Relations
+  books       Book[] @relation("OwnerBooks") // Books they own/listed
+  rentedBooks Book[] @relation("RentedBooks") // Books they rented (if seeker)
+}
+
+model Book {
+  id         String     @id @default(uuid())
+  title      String
+  coverImage String     @default("https://media.istockphoto.com/id/647809752/photo/old-books-with-vintage-bindings-and-beautiful-gilded-leather-book-covers.jpg?s=2048x2048&w=is&k=20&c=dkAOzKo7ZlN5ssZHF_QoOpJE97C4TCznOqxyVZRNmOk=")
+  author     String
+  genre      String?
+  city       String
+  contact    String
+  status     BookStatus @default(AVAILABLE)
+
+  // Owner (who listed it)
+  ownerId String
+  owner   User   @relation("OwnerBooks", fields: [ownerId], references: [id])
+
+  // Seeker (who rented it) — optional
+  rentedById String?
+  rentedBy   User?   @relation("RentedBooks", fields: [rentedById], references: [id])
+
+  // Exchange relation
+  exchangedWithId String? // ID of the book this one is exchanged with
+  exchangedWith   Book?   @relation("BookExchange", fields: [exchangedWithId], references: [id])
+  exchangedBy     Book[]  @relation("BookExchange")
+
+  createdAt DateTime @default(now())
+}
+
+enum Role {
+  OWNER
+  SEEKER
+}
+
+enum BookStatus {
+  AVAILABLE
+  RENTED
+  EXCHANGED
+}

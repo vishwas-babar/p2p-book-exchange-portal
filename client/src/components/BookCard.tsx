@@ -44,7 +44,7 @@ type BookCardProps = {
     book: Book
     userId: string
     fetchBooks: () => void
-    onExchangeClick: (book: Book) => void
+    onExchangeClick?: (book: Book) => void
     bookBelongsToOwner: boolean
     editBook?: (bookId: string) => void
 }
@@ -53,7 +53,7 @@ export function BookCard({
     book,
     userId,
     fetchBooks,
-    onExchangeClick,
+    onExchangeClick = () => { },
     bookBelongsToOwner,
     editBook = () => { },
 }: BookCardProps) {
@@ -160,13 +160,13 @@ export function BookCard({
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem
+                            {/* <DropdownMenuItem
                                 className="flex items-center gap-2"
                                 onClick={() => editBook(book.id)}
                             >
                                 <Pencil size={16} />
                                 Edit
-                            </DropdownMenuItem>
+                            </DropdownMenuItem> */}
                             <DropdownMenuItem
                                 className="flex items-center gap-2 text-red-600 focus:text-red-600"
                                 onClick={() => deleteBook(book.id)}

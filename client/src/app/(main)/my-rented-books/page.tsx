@@ -68,7 +68,7 @@ export default function RentedBooksPage() {
                     Loading rented books...
                 </div>
             ) : books.length === 0 ? (
-                <p className="text-center text-muted-foreground">You haven't rented any books yet.</p>
+                <p className="text-center text-muted-foreground">You {"haven't"} rented any books yet.</p>
             ) : (
                 <div className="grid md:grid-cols-2 gap-6">
                     {books.map((book) => (
@@ -77,6 +77,7 @@ export default function RentedBooksPage() {
                             book={book}
                             userId={user?.id || ""}
                             fetchBooks={fetchBooks}
+                            bookBelongsToOwner={book.owner.id === user?.id}
                             // onRent={() => { }} // no need to handle rent here
                             // onUnrent={() => { }} // optional: implement unrent here
                         />

@@ -115,14 +115,16 @@ const Page = () => {
           <TabsContent value="RENTED">
             <div className="grid gap-4 mt-4">
               {filterBooks("RENTED").map((book) => (
-                <Card key={book.id}>
-                  <CardHeader>
-                    <CardTitle>{book.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p>Status: Rented</p>
-                  </CardContent>
-                </Card>
+                <BookCard
+                  key={book.id}
+                  book={book}
+                  userId={user?.id || ""}
+                  fetchBooks={fetchOwnerBooks}
+                  onExchangeClick={() => { }}
+                  bookBelongsToOwner={book.owner.id === user?.id}
+                  editBook={() => editBook(book)}
+
+                />
               ))}
             </div>
           </TabsContent>

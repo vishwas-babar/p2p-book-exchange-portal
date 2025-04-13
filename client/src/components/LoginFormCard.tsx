@@ -81,7 +81,7 @@ export default function LoginFormCard() {
                         {loading ? "Logging in..." : "Login"}
                     </Button>
                     <p className="text-sm text-center">
-                        Don't have an account?{" "}
+                       {" Don't have an account?"}{" "}
                         <Link href="/register" className="text-blue-500 hover:underline">
                             Register
                         </Link>

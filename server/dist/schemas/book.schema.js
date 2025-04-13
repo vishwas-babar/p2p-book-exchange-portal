@@ -8,5 +8,6 @@ const bookSchema = zod_1.z.object({
     genre: zod_1.z.string().optional(),
     city: zod_1.z.string().min(2),
     contact: zod_1.z.string().min(6),
+    coverImage: zod_1.z.string().url(),
 });
 exports.default = bookSchema;
