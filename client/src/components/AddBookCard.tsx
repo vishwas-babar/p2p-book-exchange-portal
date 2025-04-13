@@ -1,22 +1,21 @@
 "use client";
+
 import {
     Dialog,
     DialogContent,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Textarea } from "@/components/ui/textarea";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import axios from "axios";
 import { BackendUrl } from "@/config";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useAuthUser } from "@/hooks/useAuthUser";
 
 const formSchema = z.object({
     title: z.string().min(2),
@@ -24,33 +23,25 @@ const formSchema = z.object({
     genre: z.string().optional(),
     city: z.string().min(2),
     contact: z.string().min(6),
+    coverImage: z.string().url()
 });
 
 type FormData = z.infer<typeof formSchema>;
 
-export function AddBookCard({ open = false, setOpen }: {
+export function AddBookCard({
+    open = false,
+    setOpen,
+    refetch = () => { },
+    editing = false,
+    editBookId = "", // book ID for editing
+}: {
     open: boolean;
     setOpen: (open: boolean) => void;
+    refetch?: () => void;
+    editing?: boolean;
+    editBookId?: string;
 }) {
-
-    const [user, setUser] = useState({
-        id: "123",
-        name: "John Doe",
-    });
-    const router = useRouter();
-
-    useEffect(() => {
-      
-        const localStorageUser = localStorage.getItem("user");
-        if (!localStorageUser) {
-            toast.error("Please login to add a book");
-            return router.push("/login");
-        }
-console.log("localStorageUser: ", localStorageUser);
-        const parsedUser = JSON.parse(localStorageUser || "");
-        setUser(parsedUser);
-    }, [])
-    
+    const { user } = useAuthUser();
 
     const {
         register,
@@ -61,36 +52,74 @@ console.log("localStorageUser: ", localStorageUser);
         resolver: zodResolver(formSchema),
     });
 
+    // fetch book data for editing
+    useEffect(() => {
+        if (open) fetchBook();
+    }, [editing, editBookId, open, reset]);
+
+
+    const fetchBook = async () => {
+        if (editing && editBookId) {
+            try {
+                const res = await axios.get(`${BackendUrl}/book/${editBookId}`);
+                const book = res.data;
+                reset({
+                    title: book.title,
+                    author: book.author,
+                    genre: book.genre || "",
+                    city: book.city,
+                    contact: book.contact,
+                    coverImage: book.coverImage
+                });
+            } catch (error) {
+                console.error("Failed to fetch book details:", error);
+                toast.error("Failed to load book data");
+            }
+        } else {
+            reset(); // reset to empty form when not editing
+        }
+    };
+
+
     const onSubmit = async (data: FormData) => {
-        console.log("Submitted Book Data:", data);
         try {
+            if (editing) {
+                const res = await axios.put(`${BackendUrl}/book/${editBookId}`, {
+                    ...data,
+                    userId: user?.id,
+                });
+                toast.success("Book updated successfully!");
+            } else {
+                const res = await axios.post(`${BackendUrl}/book/add`, {
+                    ...data,
+                    userId: user?.id,
+                });
+                toast.success("Book added successfully!");
+            }
 
-            const res = await axios.post(`${BackendUrl}/book/add`, {
-                ...data,
-                userId: user.id,
-            })
             setOpen(false);
-            toast.success("Book added successfully!");
             reset();
+            refetch();
         } catch (error) {
-            console.error("Error adding book:", error);
-
+            console.error("Error submitting book:", error);
+            toast.error("Something went wrong");
         }
     };
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            {/* <DialogTrigger asChild>
-        <Button>Create New Book</Button>
-      </DialogTrigger> */}
-
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                    <DialogTitle>Add New Book</DialogTitle>
+                    <DialogTitle>{editing ? "Edit Book" : "Add New Book"}</DialogTitle>
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
-                    
+                    <div>
+                        <label className="block text-sm font-medium">Cover Image</label>
+                        <Input {...register("coverImage")} placeholder="Cover Image URL" />
+                        {errors.coverImage && <p className="text-sm text-red-500">{errors.coverImage.message}</p>}
+                    </div>
+
                     <div>
                         <label className="block text-sm font-medium">Title</label>
                         <Input {...register("title")} placeholder="Book Title" />
@@ -121,7 +150,7 @@ console.log("localStorageUser: ", localStorageUser);
                     </div>
 
                     <div className="flex justify-end">
-                        <Button type="submit">Add Book</Button>
+                        <Button type="submit">{editing ? "Update Book" : "Add Book"}</Button>
                     </div>
                 </form>
             </DialogContent>

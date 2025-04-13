@@ -29,13 +29,14 @@ model User {
 }
 
 model Book {
-  id              String     @id @default(uuid())
-  title           String
-  author          String
-  genre           String?
-  city            String
-  contact         String
-  status          BookStatus @default(AVAILABLE)
+  id         String     @id @default(uuid())
+  title      String
+  coverImage String     @default("https://media.istockphoto.com/id/647809752/photo/old-books-with-vintage-bindings-and-beautiful-gilded-leather-book-covers.jpg?s=2048x2048&w=is&k=20&c=dkAOzKo7ZlN5ssZHF_QoOpJE97C4TCznOqxyVZRNmOk=")
+  author     String
+  genre      String?
+  city       String
+  contact    String
+  status     BookStatus @default(AVAILABLE)
 
   // Owner (who listed it)
   ownerId String

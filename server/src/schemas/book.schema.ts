@@ -7,6 +7,7 @@ const bookSchema = z.object({
   genre: z.string().optional(),
   city: z.string().min(2),
   contact: z.string().min(6),
+  coverImage: z.string().url(),
 });
 
 
