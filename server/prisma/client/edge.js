@@ -165,6 +165,14 @@ const config = {
         "fromEnvVar": null,
         "value": "debian-openssl-3.0.x",
         "native": true
+      },
+      {
+        "fromEnvVar": null,
+        "value": "linux-musl"
+      },
+      {
+        "fromEnvVar": null,
+        "value": "rhel-openssl-3.0.x"
       }
     ],
     "previewFeatures": [],
@@ -172,7 +180,7 @@ const config = {
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
-    "rootEnvPath": "../../.env",
+    "rootEnvPath": null,
     "schemaEnvPath": "../../.env"
   },
   "relativePath": "..",
@@ -191,8 +199,8 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider = \"prisma-client-js\"\n  output   = \"./client\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id        String   @id @default(uuid())\n  name      String\n  email     String   @unique\n  mobile    String\n  password  String\n  role      Role\n  createdAt DateTime @default(now())\n\n  // Relations\n  books       Book[] @relation(\"OwnerBooks\") // Books they own/listed\n  rentedBooks Book[] @relation(\"RentedBooks\") // Books they rented (if seeker)\n}\n\nmodel Book {\n  id         String     @id @default(uuid())\n  title      String\n  coverImage String     @default(\"https://media.istockphoto.com/id/647809752/photo/old-books-with-vintage-bindings-and-beautiful-gilded-leather-book-covers.jpg?s=2048x2048&w=is&k=20&c=dkAOzKo7ZlN5ssZHF_QoOpJE97C4TCznOqxyVZRNmOk=\")\n  author     String\n  genre      String?\n  city       String\n  contact    String\n  status     BookStatus @default(AVAILABLE)\n\n  // Owner (who listed it)\n  ownerId String\n  owner   User   @relation(\"OwnerBooks\", fields: [ownerId], references: [id])\n\n  // Seeker (who rented it) — optional\n  rentedById String?\n  rentedBy   User?   @relation(\"RentedBooks\", fields: [rentedById], references: [id])\n\n  // Exchange relation\n  exchangedWithId String? // ID of the book this one is exchanged with\n  exchangedWith   Book?   @relation(\"BookExchange\", fields: [exchangedWithId], references: [id])\n  exchangedBy     Book[]  @relation(\"BookExchange\")\n\n  createdAt DateTime @default(now())\n}\n\nenum Role {\n  OWNER\n  SEEKER\n}\n\nenum BookStatus {\n  AVAILABLE\n  RENTED\n  EXCHANGED\n}\n",
-  "inlineSchemaHash": "cb5e9e8ac3efc9d353b3ed90e651ee1ad1d3d7a1eb0199765e2662858ba0cf83",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\n// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?\n// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init\n\ngenerator client {\n  provider      = \"prisma-client-js\"\n  output        = \"./client\"\n  binaryTargets = [\"native\", \"linux-musl\", \"rhel-openssl-3.0.x\"]\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id        String   @id @default(uuid())\n  name      String\n  email     String   @unique\n  mobile    String\n  password  String\n  role      Role\n  createdAt DateTime @default(now())\n\n  // Relations\n  books       Book[] @relation(\"OwnerBooks\") // Books they own/listed\n  rentedBooks Book[] @relation(\"RentedBooks\") // Books they rented (if seeker)\n}\n\nmodel Book {\n  id         String     @id @default(uuid())\n  title      String\n  coverImage String     @default(\"https://media.istockphoto.com/id/647809752/photo/old-books-with-vintage-bindings-and-beautiful-gilded-leather-book-covers.jpg?s=2048x2048&w=is&k=20&c=dkAOzKo7ZlN5ssZHF_QoOpJE97C4TCznOqxyVZRNmOk=\")\n  author     String\n  genre      String?\n  city       String\n  contact    String\n  status     BookStatus @default(AVAILABLE)\n\n  // Owner (who listed it)\n  ownerId String\n  owner   User   @relation(\"OwnerBooks\", fields: [ownerId], references: [id])\n\n  // Seeker (who rented it) — optional\n  rentedById String?\n  rentedBy   User?   @relation(\"RentedBooks\", fields: [rentedById], references: [id])\n\n  // Exchange relation\n  exchangedWithId String? // ID of the book this one is exchanged with\n  exchangedWith   Book?   @relation(\"BookExchange\", fields: [exchangedWithId], references: [id])\n  exchangedBy     Book[]  @relation(\"BookExchange\")\n\n  createdAt DateTime @default(now())\n}\n\nenum Role {\n  OWNER\n  SEEKER\n}\n\nenum BookStatus {\n  AVAILABLE\n  RENTED\n  EXCHANGED\n}\n",
+  "inlineSchemaHash": "7c1c77db67674cb7405ff60d50d02405a3ae16abbadb780bcfaa081b7a28c1c1",
   "copyEngine": true
 }
 config.dirname = '/'
