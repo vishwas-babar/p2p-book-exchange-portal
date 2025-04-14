@@ -54,7 +54,7 @@ Users can register with:
 | Frontend   | Next.js (React, Tailwind) |
 | Backend    | Express.js (Node.js)    |
 | Storage    | postgres   |
-| Deployment | Vercel (frontend) + Railway (backend) |
+| Deployment | Vercel (frontend, backend)  |
 
 ## ⚙️ Setup Instructions
 
